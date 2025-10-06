@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tajush Sharia Library</title>
 
-  <!-- Urdu Nastaleeq Font -->
+  <!-- Urdu Font -->
   <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu&display=swap" rel="stylesheet">
 
   <style>
@@ -13,8 +13,8 @@
       margin: 0;
       font-family: "Noto Nastaliq Urdu", serif;
       background-color: #f9f9f9;
-      direction: rtl;
       text-align: center;
+      direction: rtl;
     }
 
     header {
@@ -27,7 +27,6 @@
     .urdu-name {
       font-size: 42px;
       font-weight: bold;
-      line-height: 1.5;
       margin-bottom: 10px;
     }
 
@@ -35,7 +34,6 @@
       font-size: 20px;
       color: #c8e6c9;
       font-family: "Poppins", sans-serif;
-      letter-spacing: 1px;
     }
 
     .description {
@@ -48,67 +46,54 @@
       line-height: 1.5;
     }
 
-    /* Search Section */
+    /* Search Bar */
     .search-container {
-      margin: 40px auto;
+      margin: 30px auto;
       max-width: 500px;
-      text-align: center;
     }
 
-    .search-input {
+    input[type="text"] {
       width: 80%;
-      padding: 12px;
-      font-size: 18px;
+      padding: 10px;
       border: 2px solid #00796b;
-      border-radius: 8px;
-      outline: none;
+      border-radius: 5px;
+      font-size: 18px;
       font-family: "Noto Nastaliq Urdu", serif;
       text-align: right;
     }
 
-    .search-button {
-      padding: 12px 20px;
-      margin-top: 10px;
-      background-color: #00796b;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 18px;
-    }
-
-    .search-button:hover {
-      background-color: #004d40;
-    }
-
-    /* Books Section (for later steps) */
-    .books-section {
+    /* Featured Books Grid */
+    .book-section {
+      max-width: 900px;
       margin: 40px auto;
-      max-width: 800px;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
       gap: 20px;
+      padding: 0 20px;
     }
 
-    .book {
+    .book-card {
       background-color: white;
       border: 1px solid #ddd;
       border-radius: 10px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      width: 180px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
       padding: 10px;
+      transition: transform 0.3s;
     }
 
-    .book img {
+    .book-card:hover {
+      transform: scale(1.05);
+    }
+
+    .book-card img {
       width: 100%;
-      border-radius: 10px;
+      border-radius: 8px;
     }
 
     .book-title {
       margin-top: 10px;
-      font-size: 16px;
-      color: #333;
+      font-size: 18px;
+      font-weight: bold;
     }
   </style>
 </head>
@@ -123,53 +108,49 @@
     </div>
   </header>
 
-  <!-- 🔍 Search Section -->
+  <!-- Search Bar -->
   <div class="search-container">
-    <input type="text" class="search-input" id="searchInput" placeholder="کتاب تلاش کریں...">
-    <br>
-    <button class="search-button" onclick="searchBook()">تلاش کریں</button>
+    <input type="text" id="searchInput" placeholder="کتاب تلاش کریں...">
   </div>
 
-  <!-- 📚 Books Section -->
-  <div class="books-section" id="booksSection">
-    <!-- Books will appear here -->
-  </div>
+  <!-- Featured Books Section -->
+  <h2>📚 نمایاں کتابیں</h2>
+  <div id="bookList" class="book-section"></div>
 
   <script>
     const books = [
-      { title: "نماز کے مسائل", image: "https://via.placeholder.com/150", keywords: ["نماز", "احکام", "نماز کے مسائل"] },
-      { title: "قرآن کی روشنی", image: "https://via.placeholder.com/150", keywords: ["قرآن", "تفسیر", "اسلام"] },
-      { title: "حیات صحابہ", image: "https://via.placeholder.com/150", keywords: ["صحابہ", "اسلامی تاریخ"] },
-      { title: "Arabic Grammar", image: "https://via.placeholder.com/150", keywords: ["Arabic", "Grammar", "نحو"] }
+      { title: "نور الایضاح", image: "https://via.placeholder.com/150" },
+      { title: "احیاء العلوم", image: "https://via.placeholder.com/150" },
+      { title: "بہار شریعت", image: "https://via.placeholder.com/150" },
+      { title: "فتاوی رضویہ", image: "https://via.placeholder.com/150" },
+      { title: "حکایات اولیاء", image: "https://via.placeholder.com/150" }
     ];
 
-    function searchBook() {
-      const input = document.getElementById('searchInput').value.trim();
-      const section = document.getElementById('booksSection');
-      section.innerHTML = '';
+    const bookList = document.getElementById("bookList");
+    const searchInput = document.getElementById("searchInput");
 
-      if (input === '') {
-        section.innerHTML = '<p>براہ کرم تلاش کے لیے کوئی لفظ درج کریں۔</p>';
-        return;
-      }
-
-      const results = books.filter(book =>
-        book.keywords.some(keyword => keyword.includes(input))
-      );
-
-      if (results.length === 0) {
-        section.innerHTML = '<p>کوئی کتاب نہیں ملی۔</p>';
-        return;
-      }
-
-      results.forEach(book => {
-        section.innerHTML += `
-          <div class="book">
-            <img src="${book.image}" alt="${book.title}">
-            <div class="book-title">${book.title}</div>
-          </div>`;
+    function displayBooks(filteredBooks) {
+      bookList.innerHTML = "";
+      filteredBooks.forEach(book => {
+        const div = document.createElement("div");
+        div.classList.add("book-card");
+        div.innerHTML = `
+          <img src="${book.image}" alt="${book.title}">
+          <div class="book-title">${book.title}</div>
+        `;
+        bookList.appendChild(div);
       });
     }
+
+    // Search Functionality
+    searchInput.addEventListener("input", function () {
+      const query = this.value.trim();
+      const filtered = books.filter(book => book.title.includes(query));
+      displayBooks(filtered);
+    });
+
+    // Default Display
+    displayBooks(books);
   </script>
 
 </body>
