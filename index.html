@@ -85,7 +85,7 @@
       transform: scale(1.05);
     }
 
-    /* Featured Books Grid */
+    /* Featured Books */
     .book-section {
       max-width: 900px;
       margin: 40px auto;
@@ -120,10 +120,16 @@
       font-weight: bold;
     }
 
-    .book-author {
+    .book-roman {
       font-size: 14px;
-      color: #555;
+      color: #444;
       margin-top: 5px;
+    }
+
+    .book-author {
+      font-size: 13px;
+      color: #777;
+      margin-top: 4px;
     }
 
     /* Modal */
@@ -173,7 +179,6 @@
     #downloadBook {
       background:#00796b;
     }
-
   </style>
 </head>
 <body>
@@ -186,23 +191,23 @@
     </div>
   </header>
 
-  <!-- Search Bar -->
+  <!-- Search Bar (Top) -->
   <div class="search-container">
     <input type="text" id="searchInput" placeholder="کتاب تلاش کریں...">
   </div>
 
-  <!-- Categories Section -->
+  <!-- Categories -->
   <h2>📂 کتابوں کی اقسام</h2>
   <div id="categories">
     <div class="category-card" data-category="Darsi">درسی کتابیں (Darsi Kitaben)</div>
     <div class="category-card" data-category="GhairDarsi">غیر درسی کتابیں (Ghair Darsi Kitaben)</div>
   </div>
 
-  <!-- Featured Books Section -->
+  <!-- Featured Books -->
   <h2>📚 نمایاں کتابیں</h2>
   <div id="bookList" class="book-section"></div>
 
-  <!-- Book Modal -->
+  <!-- Modal -->
   <div id="bookModal">
     <div id="bookModalContent">
       <span id="closeModal">&times;</span>
@@ -218,12 +223,12 @@
 
   <script>
     const books = [
-      { title: "صحیح البخاری", roman: "Sahih al-Bukhari", author: "(عربی)", image: "https://via.placeholder.com/150", readLink: "#", downloadLink: "#", category: "Darsi" },
-      { title: "صحیح مسلم", roman: "Sahih Muslim", author: "(عربی)", image: "https://via.placeholder.com/150", readLink: "#", downloadLink: "#", category: "Darsi" },
-      { title: "کنزالایمان", roman: "Kanz-ul-Iman", author: "", image: "https://via.placeholder.com/150", readLink: "#", downloadLink: "#", category: "Darsi" },
-      { title: "سنن الترمذی", roman: "Sunan al-Tirmidhi", author: "(عربی)", image: "https://via.placeholder.com/150", readLink: "#", downloadLink: "#", category: "Darsi" },
-      { title: "فتاویٰ رضویہ", roman: "Fatawa-e-Razawiya", author: "", image: "https://via.placeholder.com/150", readLink: "#", downloadLink: "#", category: "GhairDarsi" },
-      { title: "بہار شریعت", roman: "Bahar-e-Shariat", author: "", image: "https://via.placeholder.com/150", readLink: "#", downloadLink: "#", category: "GhairDarsi" }
+      { title: "صحیح البخاری", roman: "Sahih al-Bukhari", author: "(عربی)", image: "https://i.imgur.com/kQWEXUl.png", readLink: "#", downloadLink: "#", category: "Darsi" },
+      { title: "صحیح مسلم", roman: "Sahih Muslim", author: "(عربی)", image: "https://i.imgur.com/kQWEXUl.png", readLink: "#", downloadLink: "#", category: "Darsi" },
+      { title: "کنزالایمان", roman: "Kanzul Iman", author: "", image: "https://i.imgur.com/kQWEXUl.png", readLink: "#", downloadLink: "#", category: "Darsi" },
+      { title: "سنن الترمذی", roman: "Sunan al-Tirmidhi", author: "(عربی)", image: "https://i.imgur.com/kQWEXUl.png", readLink: "#", downloadLink: "#", category: "Darsi" },
+      { title: "فتاویٰ رضویہ", roman: "Fatawa Razawiyyah", author: "", image: "https://i.imgur.com/kQWEXUl.png", readLink: "#", downloadLink: "#", category: "GhairDarsi" },
+      { title: "بہار شریعت", roman: "Bahar-e-Shariat", author: "", image: "https://i.imgur.com/kQWEXUl.png", readLink: "#", downloadLink: "#", category: "GhairDarsi" }
     ];
 
     const bookList = document.getElementById("bookList");
@@ -236,6 +241,7 @@
     const downloadBook = document.getElementById("downloadBook");
     const closeModal = document.getElementById("closeModal");
 
+    // Display Books
     function displayBooks(filteredBooks) {
       bookList.innerHTML = "";
       filteredBooks.forEach(book => {
@@ -243,46 +249,52 @@
         div.classList.add("book-card");
         div.innerHTML = `
           <img src="${book.image}" alt="${book.title}">
-          <div class="book-title">${book.title} (${book.roman})</div>
+          <div class="book-title">${book.title}</div>
+          <div class="book-roman">${book.roman}</div>
           <div class="book-author">${book.author}</div>
         `;
-        div.addEventListener("click", function() {
-          modalImage.src = book.image;
-          modalTitle.innerText = `${book.title} (${book.roman})`;
-          modalAuthor.innerText = book.author;
-          readOnline.href = book.readLink;
-          downloadBook.href = book.downloadLink;
-          modal.style.display = "flex";
-        });
+        div.addEventListener("click", () => openModal(book));
         bookList.appendChild(div);
       });
     }
 
-    // Initial display
-    displayBooks(books);
+    function openModal(book) {
+      modal.style.display = "flex";
+      modalImage.src = book.image;
+      modalTitle.textContent = book.title + " - " + book.roman;
+      modalAuthor.textContent = book.author;
+      readOnline.href = book.readLink;
+      downloadBook.href = book.downloadLink;
+    }
 
-    // Search functionality
+    closeModal.addEventListener("click", () => modal.style.display = "none");
+
+    window.addEventListener("click", e => {
+      if (e.target === modal) modal.style.display = "none";
+    });
+
+    // Filter by Category
+    const categories = document.querySelectorAll(".category-card");
+    categories.forEach(cat => {
+      cat.addEventListener("click", function() {
+        const selectedCategory = this.getAttribute("data-category");
+        const filtered = books.filter(book => book.category === selectedCategory);
+        displayBooks(filtered);
+      });
+    });
+
+    // Search Functionality
     searchInput.addEventListener("input", function() {
-      const query = this.value.toLowerCase();
-      const filtered = books.filter(book => 
-        book.title.toLowerCase().includes(query) ||
-        book.roman.toLowerCase().includes(query) ||
-        book.author.toLowerCase().includes(query)
+      const value = this.value.trim();
+      const filtered = books.filter(book =>
+        book.title.includes(value) ||
+        book.roman.toLowerCase().includes(value.toLowerCase())
       );
       displayBooks(filtered);
     });
 
-    // Close modal
-    closeModal.addEventListener("click", () => {
-      modal.style.display = "none";
-    });
-
-    // Close modal on outside click
-    window.addEventListener("click", (e) => {
-      if (e.target == modal) modal.style.display = "none";
-    });
-
+    // Initial Display
+    displayBooks(books);
   </script>
-
 </body>
 </html>
