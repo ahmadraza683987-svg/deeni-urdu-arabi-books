@@ -62,6 +62,37 @@
       text-align: right;
     }
 
+    /* Categories Section */
+    #categories {
+      max-width: 900px;
+      margin: 30px auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 20px;
+      padding: 0 20px;
+    }
+
+    .category-card, .subcategory-card {
+      background-color: white;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      padding: 15px;
+      cursor: pointer;
+      transition: transform 0.3s;
+    }
+
+    .category-card:hover, .subcategory-card:hover {
+      transform: scale(1.05);
+    }
+
+    .subcategory-container {
+      display: none;
+      margin-top: 10px;
+      gap: 10px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+
     /* Featured Books Grid */
     .book-section {
       max-width: 900px;
@@ -163,6 +194,21 @@
     <input type="text" id="searchInput" placeholder="کتاب تلاش کریں...">
   </div>
 
+  <!-- Categories Section -->
+  <h2>📂 کتابوں کی اقسام</h2>
+  <div id="categories">
+    <div class="category-card" data-category="Darsi">
+      درسی کتابیں<br>Darsi Kitaben
+      <div class="subcategory-container">
+        <div class="subcategory-card" data-subcategory="Kitaben">کتابیں<br>Kitaben</div>
+        <div class="subcategory-card" data-subcategory="Shuruhaat">شروحات<br>Shuruhaat</div>
+      </div>
+    </div>
+    <div class="category-card" data-category="GhairDarsi">
+      غیر درسی کتابیں<br>Ghair Darsi Kitaben
+    </div>
+  </div>
+
   <!-- Featured Books Section -->
   <h2>📚 نمایاں کتابیں</h2>
   <div id="bookList" class="book-section"></div>
@@ -182,11 +228,10 @@
 
   <script>
     const books = [
-      { title: "نور الایضاح", image: "https://via.placeholder.com/150", readLink: "#", downloadLink: "#" },
-      { title: "احیاء العلوم", image: "https://via.placeholder.com/150", readLink: "#", downloadLink: "#" },
-      { title: "بہار شریعت", image: "https://via.placeholder.com/150", readLink: "#", downloadLink: "#" },
-      { title: "فتاوی رضویہ", image: "https://via.placeholder.com/150", readLink: "#", downloadLink: "#" },
-      { title: "حکایات اولیاء", image: "https://via.placeholder.com/150", readLink: "#", downloadLink: "#" }
+      { title: "کتاب نور", image: "https://via.placeholder.com/150", readLink: "#", downloadLink: "#", category: "Darsi", subcategory: "Kitaben" },
+      { title: "شروح احادیث", image: "https://via.placeholder.com/150", readLink: "#", downloadLink: "#", category: "Darsi", subcategory: "Shuruhaat" },
+      { title: "غیر درسی کتاب 1", image: "https://via.placeholder.com/150", readLink: "#", downloadLink: "#", category: "GhairDarsi" },
+      { title: "غیر درسی کتاب 2", image: "https://via.placeholder.com/150", readLink: "#", downloadLink: "#", category: "GhairDarsi" }
     ];
 
     const bookList = document.getElementById("bookList");
@@ -198,6 +243,7 @@
     const downloadBook = document.getElementById("downloadBook");
     const closeModal = document.getElementById("closeModal");
 
+    // Display Books
     function displayBooks(filteredBooks) {
       bookList.innerHTML = "";
       filteredBooks.forEach(book => {
@@ -218,17 +264,21 @@
       });
     }
 
-    searchInput.addEventListener("input", function () {
+    // Initial Display
+    displayBooks(books);
+
+    // Search functionality
+    searchInput.addEventListener("input", function() {
       const query = this.value.trim();
       const filtered = books.filter(book => book.title.includes(query));
       displayBooks(filtered);
     });
 
-    closeModal.addEventListener("click", function() {
-      modal.style.display = "none";
+    // Close modal
+    closeModal.addEventListener("click", () => modal.style.display = "none");
+    window.addEventListener("click", e => {
+      if (e.target === modal) modal.style.display = "none";
     });
-
-    displayBooks(books);
   </script>
 
 </body>
