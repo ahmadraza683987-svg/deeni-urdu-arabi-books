@@ -79,6 +79,7 @@
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
       padding: 10px;
       transition: transform 0.3s;
+      cursor: pointer;
     }
 
     .book-card:hover {
@@ -95,6 +96,55 @@
       font-size: 18px;
       font-weight: bold;
     }
+
+    /* Modal */
+    #bookModal {
+      display:none;
+      position:fixed;
+      top:0;
+      left:0;
+      width:100%;
+      height:100%;
+      background: rgba(0,0,0,0.8);
+      justify-content:center;
+      align-items:center;
+      z-index:1000;
+    }
+
+    #bookModalContent {
+      background:white;
+      padding:20px;
+      border-radius:10px;
+      max-width:400px;
+      width:90%;
+      text-align:center;
+      position:relative;
+    }
+
+    #closeModal {
+      position:absolute;
+      top:10px;
+      right:15px;
+      cursor:pointer;
+      font-size:20px;
+    }
+
+    #readOnline, #downloadBook {
+      text-decoration:none;
+      color:white;
+      padding:10px 20px;
+      border-radius:5px;
+      margin:5px;
+    }
+
+    #readOnline {
+      background:#004d40;
+    }
+
+    #downloadBook {
+      background:#00796b;
+    }
+
   </style>
 </head>
 
@@ -117,17 +167,36 @@
   <h2>📚 نمایاں کتابیں</h2>
   <div id="bookList" class="book-section"></div>
 
+  <!-- Book Modal -->
+  <div id="bookModal">
+    <div id="bookModalContent">
+      <span id="closeModal">&times;</span>
+      <img id="modalImage" src="" alt="" style="width:100%; border-radius:5px; margin-bottom:10px;">
+      <h3 id="modalTitle"></h3>
+      <div style="margin-top:15px;">
+        <a id="readOnline" href="#" target="_blank">Read Online</a>
+        <a id="downloadBook" href="#" target="_blank">Download</a>
+      </div>
+    </div>
+  </div>
+
   <script>
     const books = [
-      { title: "نور الایضاح", image: "https://via.placeholder.com/150" },
-      { title: "احیاء العلوم", image: "https://via.placeholder.com/150" },
-      { title: "بہار شریعت", image: "https://via.placeholder.com/150" },
-      { title: "فتاوی رضویہ", image: "https://via.placeholder.com/150" },
-      { title: "حکایات اولیاء", image: "https://via.placeholder.com/150" }
+      { title: "نور الایضاح", image: "https://via.placeholder.com/150", readLink: "#", downloadLink: "#" },
+      { title: "احیاء العلوم", image: "https://via.placeholder.com/150", readLink: "#", downloadLink: "#" },
+      { title: "بہار شریعت", image: "https://via.placeholder.com/150", readLink: "#", downloadLink: "#" },
+      { title: "فتاوی رضویہ", image: "https://via.placeholder.com/150", readLink: "#", downloadLink: "#" },
+      { title: "حکایات اولیاء", image: "https://via.placeholder.com/150", readLink: "#", downloadLink: "#" }
     ];
 
     const bookList = document.getElementById("bookList");
     const searchInput = document.getElementById("searchInput");
+    const modal = document.getElementById("bookModal");
+    const modalImage = document.getElementById("modalImage");
+    const modalTitle = document.getElementById("modalTitle");
+    const readOnline = document.getElementById("readOnline");
+    const downloadBook = document.getElementById("downloadBook");
+    const closeModal = document.getElementById("closeModal");
 
     function displayBooks(filteredBooks) {
       bookList.innerHTML = "";
@@ -138,18 +207,27 @@
           <img src="${book.image}" alt="${book.title}">
           <div class="book-title">${book.title}</div>
         `;
+        div.addEventListener("click", function() {
+          modalImage.src = book.image;
+          modalTitle.innerText = book.title;
+          readOnline.href = book.readLink;
+          downloadBook.href = book.downloadLink;
+          modal.style.display = "flex";
+        });
         bookList.appendChild(div);
       });
     }
 
-    // Search Functionality
     searchInput.addEventListener("input", function () {
       const query = this.value.trim();
       const filtered = books.filter(book => book.title.includes(query));
       displayBooks(filtered);
     });
 
-    // Default Display
+    closeModal.addEventListener("click", function() {
+      modal.style.display = "none";
+    });
+
     displayBooks(books);
   </script>
 
