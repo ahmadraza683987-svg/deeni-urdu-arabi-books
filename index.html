@@ -46,34 +46,6 @@
       line-height: 1.5;
     }
 
-    /* Categories Section */
-    .categories {
-      margin: 40px auto;
-      max-width: 900px;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 15px;
-    }
-
-    .category-card {
-      background-color: #ffffff;
-      border: 2px solid #00796b;
-      color: #004d40;
-      border-radius: 12px;
-      padding: 15px 25px;
-      font-size: 20px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    .category-card:hover {
-      background-color: #00796b;
-      color: white;
-      transform: scale(1.05);
-    }
-
     /* Search Bar */
     .search-container {
       margin: 20px auto;
@@ -90,18 +62,35 @@
       text-align: right;
     }
 
-    /* Featured Books */
-    h2 {
-      margin-top: 50px;
-      font-size: 26px;
-      color: #004d40;
+    /* Categories Section */
+    #categories {
+      max-width: 900px;
+      margin: 20px auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 20px;
+      padding: 0 20px;
     }
 
+    .category-card {
+      background-color: white;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      padding: 15px;
+      cursor: pointer;
+      transition: transform 0.3s;
+    }
+
+    .category-card:hover {
+      transform: scale(1.05);
+    }
+
+    /* Featured Books Grid */
     .book-section {
-      max-width: 1000px;
-      margin: 30px auto;
+      max-width: 900px;
+      margin: 40px auto;
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
       gap: 20px;
       padding: 0 20px;
     }
@@ -110,9 +99,10 @@
       background-color: white;
       border: 1px solid #ddd;
       border-radius: 10px;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
       padding: 10px;
       transition: transform 0.3s;
+      cursor: pointer;
     }
 
     .book-card:hover {
@@ -128,16 +118,63 @@
       margin-top: 10px;
       font-size: 18px;
       font-weight: bold;
-      color: #004d40;
     }
 
     .book-author {
-      font-size: 15px;
-      color: #00796b;
+      font-size: 14px;
+      color: #555;
+      margin-top: 5px;
+    }
+
+    /* Modal */
+    #bookModal {
+      display:none;
+      position:fixed;
+      top:0;
+      left:0;
+      width:100%;
+      height:100%;
+      background: rgba(0,0,0,0.8);
+      justify-content:center;
+      align-items:center;
+      z-index:1000;
+    }
+
+    #bookModalContent {
+      background:white;
+      padding:20px;
+      border-radius:10px;
+      max-width:400px;
+      width:90%;
+      text-align:center;
+      position:relative;
+    }
+
+    #closeModal {
+      position:absolute;
+      top:10px;
+      right:15px;
+      cursor:pointer;
+      font-size:20px;
+    }
+
+    #readOnline, #downloadBook {
+      text-decoration:none;
+      color:white;
+      padding:10px 20px;
+      border-radius:5px;
+      margin:5px;
+    }
+
+    #readOnline {
+      background:#004d40;
+    }
+
+    #downloadBook {
+      background:#00796b;
     }
   </style>
 </head>
-
 <body>
 
   <header>
@@ -148,35 +185,57 @@
     </div>
   </header>
 
-  <!-- Categories -->
-  <section id="categories" class="categories">
-    <div class="category-card" data-category="darsi">📘 درسی کتابیں (Darsi Books)</div>
-    <div class="category-card" data-category="ghair-darsi">📗 غیر درسی کتابیں (Ghair Darsi Books)</div>
-  </section>
-
-  <!-- Search Bar -->
+  <!-- Search Bar (Top) -->
   <div class="search-container">
     <input type="text" id="searchInput" placeholder="کتاب تلاش کریں...">
   </div>
 
-  <!-- Featured Books -->
+  <!-- Categories Section -->
+  <h2>📂 کتابوں کی اقسام</h2>
+  <div id="categories">
+    <div class="category-card" data-category="Darsi">درسی کتابیں (Darsi Kitaben)</div>
+    <div class="category-card" data-category="GhairDarsi">غیر درسی کتابیں (Ghair Darsi Kitaben)</div>
+  </div>
+
+  <!-- Featured Books Section -->
   <h2>📚 نمایاں کتابیں</h2>
   <div id="bookList" class="book-section"></div>
 
+  <!-- Book Modal -->
+  <div id="bookModal">
+    <div id="bookModalContent">
+      <span id="closeModal">&times;</span>
+      <img id="modalImage" src="" alt="" style="width:100%; border-radius:5px; margin-bottom:10px;">
+      <h3 id="modalTitle"></h3>
+      <div class="book-author" id="modalAuthor"></div>
+      <div style="margin-top:15px;">
+        <a id="readOnline" href="#" target="_blank">Read Online</a>
+        <a id="downloadBook" href="#" target="_blank">Download</a>
+      </div>
+    </div>
+  </div>
+
   <script>
     const books = [
-      { title: "صحیح البخاری (عربی)", author: "امام بخاریؒ", category: "darsi", image: "https://via.placeholder.com/150" },
-      { title: "صحیح مسلم (عربی)", author: "امام مسلمؒ", category: "darsi", image: "https://via.placeholder.com/150" },
-      { title: "کنزالایمان", author: "اعلیٰ حضرت احمد رضا خانؒ", category: "ghair-darsi", image: "https://via.placeholder.com/150" },
-      { title: "سنن الترمذی (عربی)", author: "امام ترمذیؒ", category: "darsi", image: "https://via.placeholder.com/150" },
-      { title: "فتاویٰ رضویہ", author: "اعلیٰ حضرت احمد رضا خانؒ", category: "ghair-darsi", image: "https://via.placeholder.com/150" },
-      { title: "بہار شریعت", author: "مولانا امجد علی اعظمیؒ", category: "ghair-darsi", image: "https://via.placeholder.com/150" }
+      { title: "صحیح البخاری", author: "(عربی)", image: "https://via.placeholder.com/150", readLink: "#", downloadLink: "#", category: "Darsi" },
+      { title: "صحیح مسلم", author: "(عربی)", image: "https://via.placeholder.com/150", readLink: "#", downloadLink: "#", category: "Darsi" },
+      { title: "کنزالایمان", author: "", image: "https://via.placeholder.com/150", readLink: "#", downloadLink: "#", category: "Darsi" },
+      { title: "سنن الترمذی", author: "(عربی)", image: "https://via.placeholder.com/150", readLink: "#", downloadLink: "#", category: "Darsi" },
+      { title: "فتاویٰ رضویہ", author: "", image: "https://via.placeholder.com/150", readLink: "#", downloadLink: "#", category: "GhairDarsi" },
+      { title: "بہار شریعت", author: "", image: "https://via.placeholder.com/150", readLink: "#", downloadLink: "#", category: "GhairDarsi" }
     ];
 
     const bookList = document.getElementById("bookList");
     const searchInput = document.getElementById("searchInput");
-    const categories = document.querySelectorAll(".category-card");
+    const modal = document.getElementById("bookModal");
+    const modalImage = document.getElementById("modalImage");
+    const modalTitle = document.getElementById("modalTitle");
+    const modalAuthor = document.getElementById("modalAuthor");
+    const readOnline = document.getElementById("readOnline");
+    const downloadBook = document.getElementById("downloadBook");
+    const closeModal = document.getElementById("closeModal");
 
+    // Display Books
     function displayBooks(filteredBooks) {
       bookList.innerHTML = "";
       filteredBooks.forEach(book => {
@@ -187,27 +246,46 @@
           <div class="book-title">${book.title}</div>
           <div class="book-author">${book.author}</div>
         `;
+        div.addEventListener("click", () => {
+          modalImage.src = book.image;
+          modalTitle.innerText = book.title;
+          modalAuthor.innerText = book.author;
+          readOnline.href = book.readLink;
+          downloadBook.href = book.downloadLink;
+          modal.style.display = "flex";
+        });
         bookList.appendChild(div);
       });
     }
 
-    // Category Filter
+    // Initial display: all books
+    displayBooks(books);
+
+    // Search functionality
+    searchInput.addEventListener("input", function () {
+      const query = this.value.trim().toLowerCase();
+      const filtered = books.filter(book => 
+        book.title.toLowerCase().includes(query) ||
+        book.author.toLowerCase().includes(query)
+      );
+      displayBooks(filtered);
+    });
+
+    // Close modal
+    closeModal.addEventListener("click", () => {
+      modal.style.display = "none";
+    });
+
+    // Category click
+    const categories = document.querySelectorAll(".category-card");
     categories.forEach(cat => {
-      cat.addEventListener("click", function() {
-        const selectedCategory = this.getAttribute("data-category");
+      cat.addEventListener("click", () => {
+        const selectedCategory = cat.getAttribute("data-category");
         const filtered = books.filter(book => book.category === selectedCategory);
         displayBooks(filtered);
       });
     });
 
-    // Search Function
-    searchInput.addEventListener("input", function () {
-      const query = this.value.trim();
-      const filtered = books.filter(book => book.title.includes(query));
-      displayBooks(filtered);
-    });
-
-    displayBooks(books);
   </script>
 
 </body>
