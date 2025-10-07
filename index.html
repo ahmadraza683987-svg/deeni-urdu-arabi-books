@@ -64,6 +64,16 @@ input[type="text"] {
   text-align: right;
 }
 
+/* ====================== Search Results ====================== */
+#searchResults {
+  max-width: 900px;
+  margin: 20px auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 20px;
+  padding: 0 20px;
+}
+
 /* ====================== Book of the Day ====================== */
 #bookOfDay {
   max-width: 700px;
@@ -73,13 +83,16 @@ input[type="text"] {
   margin: 30px auto;
   box-shadow: 0 4px 10px rgba(0,0,0,0.1);
   border-top: 5px solid #00796b;
+  display: flex;
+  align-items: center;
+  gap: 15px;
 }
 #bookOfDay img {
   width: 120px;
   border-radius: 10px;
 }
 #bookOfDay h3 {
-  margin-top: 10px;
+  margin-top: 0;
   font-size: 22px;
 }
 #bookOfDay .book-author {
@@ -234,6 +247,9 @@ input[type="text"] {
   <input type="text" id="searchInput" placeholder="کتاب تلاش کریں...">
 </div>
 
+<!-- ====================== Search Results ====================== -->
+<div id="searchResults"></div>
+
 <!-- ====================== Book of the Day ====================== -->
 <h2>📖 آج کی کتاب</h2>
 <div id="bookOfDay"></div>
@@ -263,7 +279,6 @@ input[type="text"] {
   </div>
 </div>
 
-<!-- ====================== JavaScript ====================== -->
 <script>
 const books = [
   { titleUrdu: "صحیح البخاری", titleRoman: "Sahih al-Bukhari", author: "(عربی)", image: "https://via.placeholder.com/150", readLink: "#", downloadLink: "#", category: "Darsi" },
@@ -276,6 +291,7 @@ const books = [
 
 const bookList = document.getElementById("bookList");
 const bookOfDay = document.getElementById("bookOfDay");
+const searchResults = document.getElementById("searchResults");
 const searchInput = document.getElementById("searchInput");
 const modal = document.getElementById("bookModal");
 const modalImage = document.getElementById("modalImage");
@@ -286,8 +302,8 @@ const downloadBook = document.getElementById("downloadBook");
 const closeModal = document.getElementById("closeModal");
 
 /* ====================== Display Books ====================== */
-function displayBooks(filteredBooks, query="") {
-  bookList.innerHTML = "";
+function displayBooks(filteredBooks, container, query="") {
+  container.innerHTML = "";
   filteredBooks.forEach(book => {
     const div = document.createElement("div");
     div.classList.add("book-card");
@@ -305,7 +321,7 @@ function displayBooks(filteredBooks, query="") {
     `;
 
     div.addEventListener("click", () => openModal(book));
-    bookList.appendChild(div);
+    container.appendChild(div);
   });
 }
 
@@ -316,9 +332,11 @@ function showBookOfDay() {
   const book = books[index];
   bookOfDay.innerHTML = `
     <img src="${book.image}" alt="${book.titleUrdu}">
-    <h3>${book.titleUrdu} (${book.titleRoman})</h3>
-    <div class="book-author">${book.author}</div>
-    <button onclick="openModal(books[${index}])">مزید دیکھیں</button>
+    <div>
+      <h3>${book.titleUrdu} (${book.titleRoman})</h3>
+      <div class="book-author">${book.author}</div>
+      <button onclick="openModal(books[${index}])">مزید دیکھیں</button>
+    </div>
   `;
 }
 
@@ -338,10 +356,14 @@ window.addEventListener("click", e => { if(e.target == modal) modal.style.displa
 /* ====================== Search ====================== */
 searchInput.addEventListener("input", () => {
   const query = searchInput.value.trim();
+  if(query === ""){
+    searchResults.innerHTML = "";
+    return;
+  }
   const filtered = books.filter(book =>
     book.titleUrdu.includes(query) || book.titleRoman.toLowerCase().includes(query.toLowerCase())
   );
-  displayBooks(filtered, query);
+  displayBooks(filtered, searchResults, query);
 });
 
 /* ====================== Category Filter ====================== */
@@ -349,12 +371,12 @@ document.querySelectorAll(".category-card").forEach(card => {
   card.addEventListener("click", () => {
     const category = card.getAttribute("data-category");
     const filtered = books.filter(book => book.category === category);
-    displayBooks(filtered);
+    displayBooks(filtered, bookList);
   });
 });
 
 /* ====================== Initialize ====================== */
-displayBooks(books);
+displayBooks(books, bookList);
 showBookOfDay();
 </script>
 </body>
