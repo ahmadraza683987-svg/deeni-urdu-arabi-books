@@ -64,6 +64,42 @@ input[type="text"] {
   text-align: right;
 }
 
+/* ====================== Book of the Day ====================== */
+#bookOfDay {
+  max-width: 700px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 20px;
+  margin: 30px auto;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  border-top: 5px solid #00796b;
+}
+#bookOfDay img {
+  width: 120px;
+  border-radius: 10px;
+}
+#bookOfDay h3 {
+  margin-top: 10px;
+  font-size: 22px;
+}
+#bookOfDay .book-author {
+  color: #555;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+#bookOfDay button {
+  background-color: #00796b;
+  color: white;
+  border: none;
+  padding: 8px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-family: "Noto Nastaliq Urdu", serif;
+}
+#bookOfDay button:hover {
+  background-color: #004d40;
+}
+
 /* ====================== Categories Section ====================== */
 #categories {
   max-width: 900px;
@@ -180,7 +216,6 @@ input[type="text"] {
 #downloadBook {
   background:#00796b;
 }
-
 </style>
 </head>
 <body>
@@ -198,6 +233,10 @@ input[type="text"] {
 <div class="search-container">
   <input type="text" id="searchInput" placeholder="کتاب تلاش کریں...">
 </div>
+
+<!-- ====================== Book of the Day ====================== -->
+<h2>📖 آج کی کتاب</h2>
+<div id="bookOfDay"></div>
 
 <!-- ====================== Categories Section ====================== -->
 <h2>📂 کتابوں کی اقسام</h2>
@@ -236,6 +275,7 @@ const books = [
 ];
 
 const bookList = document.getElementById("bookList");
+const bookOfDay = document.getElementById("bookOfDay");
 const searchInput = document.getElementById("searchInput");
 const modal = document.getElementById("bookModal");
 const modalImage = document.getElementById("modalImage");
@@ -264,24 +304,38 @@ function displayBooks(filteredBooks, query="") {
       <div class="book-author">${book.author}</div>
     `;
 
-    // Open modal on click
-    div.addEventListener("click", () => {
-      modalImage.src = book.image;
-      modalTitle.innerText = `${book.titleUrdu} (${book.titleRoman})`;
-      modalAuthor.innerText = book.author;
-      readOnline.href = book.readLink;
-      downloadBook.href = book.downloadLink;
-      modal.style.display = "flex";
-    });
-
+    div.addEventListener("click", () => openModal(book));
     bookList.appendChild(div);
   });
 }
 
-// Initial display
-displayBooks(books);
+/* ====================== Book of the Day ====================== */
+function showBookOfDay() {
+  const today = new Date().getDate();
+  const index = today % books.length;
+  const book = books[index];
+  bookOfDay.innerHTML = `
+    <img src="${book.image}" alt="${book.titleUrdu}">
+    <h3>${book.titleUrdu} (${book.titleRoman})</h3>
+    <div class="book-author">${book.author}</div>
+    <button onclick="openModal(books[${index}])">مزید دیکھیں</button>
+  `;
+}
 
-/* ====================== Search Functionality ====================== */
+/* ====================== Modal Functions ====================== */
+function openModal(book) {
+  modalImage.src = book.image;
+  modalTitle.innerText = `${book.titleUrdu} (${book.titleRoman})`;
+  modalAuthor.innerText = book.author;
+  readOnline.href = book.readLink;
+  downloadBook.href = book.downloadLink;
+  modal.style.display = "flex";
+}
+
+closeModal.addEventListener("click", () => modal.style.display = "none");
+window.addEventListener("click", e => { if(e.target == modal) modal.style.display = "none"; });
+
+/* ====================== Search ====================== */
 searchInput.addEventListener("input", () => {
   const query = searchInput.value.trim();
   const filtered = books.filter(book =>
@@ -290,20 +344,8 @@ searchInput.addEventListener("input", () => {
   displayBooks(filtered, query);
 });
 
-/* ====================== Close Modal ====================== */
-closeModal.addEventListener("click", () => {
-  modal.style.display = "none";
-});
-
-window.addEventListener("click", (e) => {
-  if(e.target == modal){
-    modal.style.display = "none";
-  }
-});
-
 /* ====================== Category Filter ====================== */
-const categoryCards = document.querySelectorAll(".category-card");
-categoryCards.forEach(card => {
+document.querySelectorAll(".category-card").forEach(card => {
   card.addEventListener("click", () => {
     const category = card.getAttribute("data-category");
     const filtered = books.filter(book => book.category === category);
@@ -311,6 +353,9 @@ categoryCards.forEach(card => {
   });
 });
 
+/* ====================== Initialize ====================== */
+displayBooks(books);
+showBookOfDay();
 </script>
 </body>
 </html>
